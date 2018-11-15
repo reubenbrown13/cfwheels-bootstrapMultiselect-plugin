@@ -34,6 +34,7 @@ component displayname="bootstrapMultiselect" output="false" author="Reuben Brown
 		required any objectName,
 		required string property,
 		string association,
+		string keys,
 		string position,
 		any options,
 		any includeBlank,
@@ -47,6 +48,7 @@ component displayname="bootstrapMultiselect" output="false" author="Reuben Brown
 		string appendToLabel,
 		string errorElement,
 		string errorClass,
+		boolean enableCheckboxDropdown = true,
 		any encode
 	) {
 		$args(name="select", reserved="name", args=arguments);
@@ -75,16 +77,18 @@ component displayname="bootstrapMultiselect" output="false" author="Reuben Brown
 			local.content = $element(name="option", content=local.blankOptionText, attributes=local.blankOptionAttributes, encode=arguments.encode) & local.content;
 		}
 		local.encode = IsBoolean(arguments.encode) && !arguments.encode ? false : "attributes";
-		cfhtmlhead( text= '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.5/umd/popper.min.js"></script>
+		if (enableCheckboxDropdown){
+			cfhtmlhead( text= '<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.5/umd/popper.min.js"></script>
 #javaScriptIncludeTag("/plugins/bootstrapMultiselect/javascripts/bootstrap-multiselect.js")#
 #styleSheetLinkTag("/plugins/bootstrapMultiselect/stylesheets/bootstrap-multiselect.css")#' );
-		local.before = "
+			local.before = "
 <script type='text/javascript'>
 $(document).ready(function() {
   $('###objectName#-#property#').multiselect();
 });
 </script>
 " & local.before;
+			}
 		return local.before & $element(name="select", skip="objectName,property,options,includeBlank,valueField,textField,label,labelPlacement,prepend,append,prependToLabel,appendToLabel,errorElement,errorClass,association,position,encode", skipStartingWith="label", content=local.content, attributes=arguments, encode=local.encode) & local.after;
 	}
 
@@ -103,7 +107,11 @@ $(document).ready(function() {
 				if ( isArray( local.object[arguments.property] ) ) {
 					// converts array of values to string.
 					if ( arrayLen( local.object[arguments.property] ) GT 0 AND isStruct( local.object[arguments.property][1] ) ) {
-						local.fkColName = singularize( ReplaceNoCase(local.object[arguments.property][1].tableName(), singularize( local.object.tableName() ), "" ) ) & "id";
+						if ( structKeyExists( arguments, "keys" ) AND Len( arguments.keys ) GT 0 ){
+							local.fkColName = ListLast( arguments.keys );
+						} else { //try to get the fk based on the source table.
+							local.fkColName = singularize( ReplaceNoCase(local.object[arguments.property][1].tableName(), singularize( local.object.tableName() ), "" ) ) & "id";
+						}
 						local.rv = "";
 						for ( prop IN local.object[arguments.property] ) {
 							if ( structKeyExists(prop, local.fkColName) ) {
