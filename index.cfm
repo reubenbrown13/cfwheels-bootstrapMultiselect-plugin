@@ -5,6 +5,7 @@
 Popper.js is currently loaded in this plugin using a CDN.<br />
 jQuery on the default cfWheels site might be loaded at the bottom of the page and it needs to be moved to the head.  Check your /views/layout.cfm to confirm this.</p>
 <p>You will need a model that maps to a table that joins posts and categories together.  The fields in that table should be postid, categoryid.  You then need to setup the membership on these 3 tables to relate to eachother.  The posts and categories tables have "hasMany()" and the postCategories table has "belongsTo()".</p>
+<p>To make the plugin work you will need to update the rewrite file for your webserver to contain : "plugins/([\w\-]+)/javascripts|plugins/([\w\-]+)/stylesheets|", if those 2 entries don't already exist.</p>
 <h2>Usage</h2>
 <p>This automatically takes effect.  To use the feature, call the hasManySelect() function in your pages/forms.<br />
 EX : ##hasManySelect(objectName="post", property="postCategory", keys="postid,categoryid", multiple="multiple", options=model("category").findAll(), valueField="id", textField="name", label=local.Label)##
