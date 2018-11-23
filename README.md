@@ -10,3 +10,5 @@ You will need a model that maps to a table that joins posts and categories toget
 Depends on Bootstrap 4, jQuery, and popper.js to be loaded.
 Popper.js is currently loaded in this plugin using a CDN.
 jQuery on the default cfWheels site might be loaded at the bottom of the page and it needs to be moved to the head.  Check your /views/layout.cfm to confirm this.
+
+To make the plugin work you will need to update the rewrite file for your webserver to contain : "plugins/([\w\-]+)/javascripts|plugins/([\w\-]+)/stylesheets|", if those 2 entries don't already exist.
